@@ -1,0 +1,147 @@
+# prompt: read the file named final_job_list using pandas
+
+import pandas as pd
+
+df = pd.read_csv("final_job_list.csv")
+
+# Print the DataFrame
+print(df)
+
+
+# prompt: to know the columns name in the datasset
+
+# Get the column names of the DataFrame
+column_names = df.columns.tolist()
+
+# Print the column names
+print(column_names)
+import pandas as pd
+
+class Item:
+    def __init__(self, title, company, location, position_type, description, salary, identified_skills, tags=None):
+        self.title = title
+        self.company = company
+        self.location = location
+        self.position_type = position_type
+        self.description = description
+        self.salary = salary
+        self.identified_skills = identified_skills
+        self.tags = tags if tags is not None else []
+
+class ItemManager:
+    def __init__(self):
+        self.items = []
+
+
+
+    def tag_items(self):
+        item_name = input("Enter the name of the item to tag: ")
+        tags = input("Enter tags for the item (separated by commas): ").split(',')
+        for item in self.items:
+            if item.title == item_name:  # Adjust this line if the title is named differently in your Item class
+                item.tags.extend(tags)
+                print(f"Tags added to '{item_name}': {tags}")
+                return
+        print(f"Item '{item_name}' not found.")
+
+    def load_dataset(self, filename):
+        try:
+            df = pd.read_csv(filename)
+            for index, row in df.iterrows():
+                item = Item(row['Title'], row['Company'], row['Location'], row['Type of Positions'], row['Job Description'], row['Salary'], row['Identified_Skills'])
+                self.items.append(item)
+            print("Dataset loaded successfully.")
+        except Exception as e:
+            print("Error loading dataset:", e)
+
+
+    def sort_items(self, column, ascending=True):
+        try:
+            sorted_items = sorted(self.items, key=lambda x: getattr(x, column), reverse=not ascending)
+            print(f"Sorted items by {column} in {'ascending' if ascending else 'descending'} order:")
+            for item in sorted_items:
+                print(f"- {getattr(item, column)}")
+        except AttributeError:
+            print(f"Invalid column '{column}' for sorting.")
+
+    def view_tagged_items(self):
+        tag = input("Enter the tag to search for: ")
+        tagged_items_found = False
+        for item in self.items:
+            if tag in item.tags:
+                print(f"Item: {item.title}")
+                print(f"Tags: {', '.join(item.tags)}")
+                print()  # Empty line for readability
+                tagged_items_found = True
+        if not tagged_items_found:
+            print(f"No items tagged with '{tag}'.")
+
+
+
+    def categorize_items(self):
+        print("Choose a category to display items:")
+        print("1. Title")
+        print("2. Company")
+        print("3. Location")
+        print("4. Type of Positions")
+        print("5. Job Description")
+        print("6. Salary")
+        print("7. Identified Skills")
+        choice = input("Enter your choice: ")
+
+        categories = {
+            '1': 'title',
+            '2': 'company',
+            '3': 'location',
+            '4': 'position_type',
+            '5': 'description',
+            '6': 'salary',
+            '7': 'identified_skills'
+        }
+
+        if choice in categories:
+            category_name = categories[choice]
+            print(f"Items categorized by '{category_name}':")
+            for item in self.items:
+                print(f"- {getattr(item, category_name)}")
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    manager = ItemManager()
+
+    # Load dataset
+    manager.load_dataset("final_job_list.csv")
+
+    while True:
+        print("\nOptions:")
+        print("1. Categorize items")
+        print("2. Sort items")
+        print("3. Tag items")
+        print("4. View tagged items")
+        print("5. Exit")
+
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            manager.categorize_items()
+
+        elif choice == "2":
+          column = input("Enter the column to sort by: ")
+          manager.sort_items(column)
+
+
+
+        elif choice == "3":
+            manager.tag_items()
+
+        elif choice == "4":
+            manager.view_tagged_items()
+
+        elif choice == "5":
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
